@@ -1,9 +1,7 @@
 locals {
-  subnet_ids = var.transit_gateway_attachment_subnet_name == "" ?
     # If no subnet name is specified, default to all private subnets
-    module.vpc.outputs.private_subnet_ids :
     # Else, select the named subnet
-    module.vpc.outputs.named_private_subnets_map[var.transit_gateway_attachment_subnet_name]
+  subnet_ids = var.transit_gateway_attachment_subnet_name == "" ? module.vpc.outputs.private_subnet_ids : module.vpc.outputs.named_private_subnets_map[var.transit_gateway_attachment_subnet_name]
 }
 
 # Create a TGW attachment from this account's VPC to the TGW Hub
@@ -23,7 +21,7 @@ module "standard_vpc_attachment" {
   config = {
     "this" = {
       vpc_id                            = module.vpc.outputs.vpc_id
-      subnet_ids                        = locals.subnet_ids
+      subnet_ids                        = local.subnet_ids
       route_to                          = []
       route_to_cidr_blocks              = []
       static_routes                     = []
